@@ -8,7 +8,7 @@
   "scripts": {
     "start": "node ./app.js",
     "seed": "node ./seed/seed.js",
-    "test": "./node_modules/mocha/bin/mocha ./tests/accept/*.js --timeout 15000"
+    "test": "node ./node_modules/mocha/bin/mocha ./tests/accept/*.js --timeout 15000"
   },
   "dependencies": {
     "cors": "^2.7.1",
@@ -23,6 +23,7 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "chai-http": "^3.0.0",
+    "eslint": "^3.7.1",
     "mocha": "^3.0.2"
   }
 }
