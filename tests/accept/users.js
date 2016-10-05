@@ -58,4 +58,17 @@ describe('Users', function() {
       });
     });
   });
+  
+  describe('/POST create-user/', function() {
+    it('should create a new user', function(done) {
+      chai.request(url)
+        .post('/create-user/')
+        .end(function(err, res) {
+          /* res.body.should.be.a('array');
+          res.should.have.status(200);
+          res.body.length.should.be.eql(100); */
+          done();
+        });
+    });
+  });
 });
