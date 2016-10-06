@@ -60,40 +60,39 @@ describe('Users', function() {
     });
   });
   
-  //Notice that the JSON parser of the handler of the post request in users.js controller actually try parse string values to numbers. For example, the register field of the userForTesting field below is a string whose value is "12371768", after it is sent with the post request, the new user added has the register field of type number ie. 12371768. This issue is ignore for later inspection
   describe('/POST users/createuser', function() {
     it('should create a new user', function(done) {
       var userForTesting = {
-          gender: "female",
-          name: {
-            title: "mi",
-            first: "alis",
-            last: "re"
-          },
-          location: {
-            street: "1097 the aven",
-            city: "Newbrid",
-            state: "oh",
-            zip: "287"
-          },
-          email: "alison.reid@example.c",
-          username: "tinywolf7",
-          password: "rock",
-          salt: "lypI10",
-          md5: "bbdd6140e188e3bf68ae7ae67345df",
-          sha1: "4572d25c99aa65bbf0368168f65d9770b7cacf",
-          sha256: "ec0705aec7393e2269d4593f248e649400d4879b2209f11bb2e012628115a4",
-          registered: "12371768",
-          dob: "9328719",
-          phone: "031-541-91",
-          cell: "081-647-46",
-          PPS: "330224",
-          picture: {
-            large: "https://randomuser.me/api/portraits/women/60.j",
-            medium: "https://randomuser.me/api/portraits/med/women/60.j",
-            thumbnail: "https://randomuser.me/api/portraits/thumb/women/60.j"
-          }
-      }
+        "gender": "female",
+        "name": {
+          "title": "miss",
+          "first": "alison",
+          "last": "reid"
+        },
+        "location": {
+          "street": "1097 the avenue",
+          "city": "Newbridge",
+          "state": "ohio",
+          "zip": 28782
+        },
+        "email": "alison.reid@example.com",
+        "username": "tinywolf709",
+        "password": "rockon",
+        "salt": "lypI10wj",
+        "md5": "bbdd6140e188e3bf68ae7ae67345df65",
+        "sha1": "4572d25c99aa65bbf0368168f65d9770b7cacfe6",
+        "sha256": "ec0705aec7393e2269d4593f248e649400d4879b2209f11bb2e012628115a4eb",
+        "registered": 1237176893,
+        "dob": 932871968,
+        "phone": "031-541-9181",
+        "cell": "081-647-4650",
+        "PPS": "3302243T",
+        "picture": {
+          "large": "https://randomuser.me/api/portraits/women/60.jpg",
+          "medium": "https://randomuser.me/api/portraits/med/women/60.jpg",
+          "thumbnail": "https://randomuser.me/api/portraits/thumb/women/60.jpg"
+        }
+      };
       
       chai.request(url)
       .post('/users/createuser')
@@ -104,8 +103,7 @@ describe('Users', function() {
               done(error);
           } else {
               console.log("Chai: post test: id: " + res.body + ", type: " + typeof res.body);
-              assert.isOk(typeof res.body === 'string');
-              
+              assert.isOk(typeof res.body === 'string');              
               
               User.findById(res.body, function (err, user){
                   if (err) throw err;
@@ -123,14 +121,9 @@ describe('Users', function() {
                     //console.log(user[attrToTest]);
                     //console.log(userForTesting[attrToTest]);
                     assert.isOk(user[attrToTest] !== undefined);
-                    assert.isOk(userForTesting[attrToTest] !== undefined);
-                    
-                    //assert.isOk(typeof user[attrToTest] === typeof userForTesting[attrToTest]);
-                    
-                    if(typeof user[attrToTest] === 'object')
-                      assert.deepEqual(user[attrToTest],userForTesting[attrToTest]);
-                    else
-                      assert.equal(user[attrToTest],userForTesting[attrToTest]);
+                    assert.isOk(userForTesting[attrToTest] !== undefined);                    
+                    assert.isOk(typeof user[attrToTest] === typeof userForTesting[attrToTest]);
+                    assert.deepEqual(user[attrToTest],userForTesting[attrToTest]);
                   });
                   done();
               });

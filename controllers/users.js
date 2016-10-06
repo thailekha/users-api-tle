@@ -53,7 +53,7 @@ router.post('/createuser', function(req,res) {
       console.log(typeof x === "function" ? addedUser._id.x() : addedUser._id.x);
     } */ 
     console.log("New user created, id: " + addedUser._id + ", id type: " + typeof addedUser._id);
-    //console.log(addedUser);
+    console.log(addedUser);
     res.json(addedUser._id);
   });
 });
