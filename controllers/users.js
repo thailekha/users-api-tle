@@ -53,25 +53,55 @@ router.post('/createuser', function(req,res) {
       console.log(typeof x === "function" ? addedUser._id.x() : addedUser._id.x);
     } */ 
     console.log("New user created, id: " + addedUser._id + ", id type: " + typeof addedUser._id);
-    console.log(addedUser);
+    //console.log(addedUser);
     res.json(addedUser._id);
   });
 });
 
+//GET /users/deleteuser/:id
+router.get('/deleteuser/:id', function(req,res) {
+  console.log("start of delte method");
+  User.findOne({
+    _id: req.params.id
+  }, function(err, user) {
+    if (err) {
+      return res.status(500).json({
+        error: "Error reading user: " + err
+      });
+    }
+
+    if (!user) {
+      return res.status(404).end();
+    }
+    
+    console.log("End of delte method");
+    res.json("Found user to remove");
+  });
+});
+
 router.post('/updateuser', function(req,res) {
-  console.log("Users controller: got update request, request body: " + req.body.updateQuery );
-  User.findById(req.body.userid, function (err, user){
+  //console.log("Users controller: got update request, request id: " + req.body.updateQuery );
+  User.findById(req.body.userId, function (err, user){
       if (err) throw err;
-      var updateQuery = req.body.updateQuery
+      //console.log('Users controller: found user for updating: ' + user);
+      var updateQuery = req.body.updateQuery;
+      
+      //console.log("***********Old user: ");
+      //console.log(user);
       for(var attr in updateQuery) {
         user.attr = updateQuery.attr;
       }
       user.save().then(function(updatedUser) {
-        console.log("Updated user: " + updatedUser);
+        //console.log("***********Updated user: ");
+        //console.log(updatedUser);
         res.json({updateStatus: "updated user", userId: updatedUser._id});
       });
   });  
 });
 
-
+//Default route
+router.get('/*',function(req,res){
+  console.log("Default route hit")
+  res.json("Default route");
+});
 module.exports = router;
