@@ -1,7 +1,12 @@
 var User = require('../models/user');
 var express = require('express');
 var router = express.Router();
+var bodyParser = require('body-parser');
 
+router.use(bodyParser.urlencoded({
+    extended: true
+}));
+router.use(bodyParser.json());
 
 // GET /users
 // Get a list of users
@@ -35,6 +40,11 @@ router.get('/:id', function(req, res) {
 
     res.json(user);
   });
+});
+
+router.post('/insert', function(req,res) {
+  console.log(req.body);
+  res.send('Got it');
 });
 
 module.exports = router;
