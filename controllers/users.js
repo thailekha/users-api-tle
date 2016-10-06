@@ -37,14 +37,18 @@ router.get('/:id', function(req, res) {
     if (!user) {
       return res.status(404).end();
     }
-
     res.json(user);
   });
 });
 
-router.post('/insert', function(req,res) {
-  console.log(req.body);
-  res.send('Got it');
+//POST /users/createuser
+// Create User
+router.post('/createuser', function(req,res) {
+  //console.log(req.body);
+  for(var i = 0; i < 1000; i++) {
+    console.log('*');
+  }
+  res.json({querystatus: 999});
 });
 
 module.exports = router;
