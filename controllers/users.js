@@ -44,8 +44,18 @@ router.get('/:id', function(req, res) {
 
 //POST /users/createutes
 router.post('/createuser', function(req,res) {
-  console.log(req.body);
-  res.json(9999);
+  var newUser = new User(req.body);  
+  newUser.save().then(function(addedUser) {
+    /* 
+    WHY DOES THIS BLOCK RETURN AN OBJECT OF UNDEFINED ATTRIBUTES ???
+    for(var x in addedUser._id) {
+      console.log(x + ": ");
+      console.log(typeof x === "function" ? addedUser._id.x() : addedUser._id.x);
+    } */ 
+    console.log("New user created, id: " + addedUser._id + ", id type: " + typeof addedUser._id);
+    //console.log(addedUser);
+    res.json(addedUser._id);
+  });
 });
 
 module.exports = router;

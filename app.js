@@ -8,6 +8,8 @@ var fs = require('fs');
 var logger = require('winston');
 var userController = require('./controllers/users');
 
+mongoose.Promise = global.Promise;
+
 var app = express();
 
 // Add middleware
