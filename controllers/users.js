@@ -58,4 +58,15 @@ router.post('/createuser', function(req,res) {
   });
 });
 
+router.post('/updateuser', function(req,res) {
+  console.log("Users controller: got update request, request body: " + res.body )
+  /* User.findById(res.body.userid, function (err, user){
+      if (err) throw err;
+      var updateQuery = res.body.updateQuery
+  });*/
+  var userId = "0"; 
+  res.json({updateStatus: "Updated user", userId});
+});
+
+
 module.exports = router;

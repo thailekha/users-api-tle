@@ -6,12 +6,46 @@ var seed = require('../../seed/seed');
 var User = require('../../models/user');
 var expect = require('chai').expect;
 var assert = require('chai').assert;
+var http = require('http');
 
 chai.should();
 chai.use(chaiHttp);
 
 var url = 'http://127.0.0.1:8001';
 
+function getUserForTesting() {
+  return {
+        "gender": "female",
+        "name": {
+          "title": "miss",
+          "first": "alison",
+          "last": "reid"
+        },
+        "location": {
+          "street": "1097 the avenue",
+          "city": "Newbridge",
+          "state": "ohio",
+          "zip": 28782
+        },
+        "email": "alison.reid@example.com",
+        "username": "tinywolf709",
+        "password": "rockon",
+        "salt": "lypI10wj",
+        "md5": "bbdd6140e188e3bf68ae7ae67345df65",
+        "sha1": "4572d25c99aa65bbf0368168f65d9770b7cacfe6",
+        "sha256": "ec0705aec7393e2269d4593f248e649400d4879b2209f11bb2e012628115a4eb",
+        "registered": 1237176893,
+        "dob": 932871968,
+        "phone": "031-541-9181",
+        "cell": "081-647-4650",
+        "PPS": "3302243T",
+        "picture": {
+          "large": "https://randomuser.me/api/portraits/women/60.jpg",
+          "medium": "https://randomuser.me/api/portraits/med/women/60.jpg",
+          "thumbnail": "https://randomuser.me/api/portraits/thumb/women/60.jpg"
+        }
+      };
+}
 
 describe('Users', function() {
 
@@ -62,37 +96,7 @@ describe('Users', function() {
   
   describe('/POST users/createuser', function() {
     it('should create a new user', function(done) {
-      var userForTesting = {
-        "gender": "female",
-        "name": {
-          "title": "miss",
-          "first": "alison",
-          "last": "reid"
-        },
-        "location": {
-          "street": "1097 the avenue",
-          "city": "Newbridge",
-          "state": "ohio",
-          "zip": 28782
-        },
-        "email": "alison.reid@example.com",
-        "username": "tinywolf709",
-        "password": "rockon",
-        "salt": "lypI10wj",
-        "md5": "bbdd6140e188e3bf68ae7ae67345df65",
-        "sha1": "4572d25c99aa65bbf0368168f65d9770b7cacfe6",
-        "sha256": "ec0705aec7393e2269d4593f248e649400d4879b2209f11bb2e012628115a4eb",
-        "registered": 1237176893,
-        "dob": 932871968,
-        "phone": "031-541-9181",
-        "cell": "081-647-4650",
-        "PPS": "3302243T",
-        "picture": {
-          "large": "https://randomuser.me/api/portraits/women/60.jpg",
-          "medium": "https://randomuser.me/api/portraits/med/women/60.jpg",
-          "thumbnail": "https://randomuser.me/api/portraits/thumb/women/60.jpg"
-        }
-      };
+      var userForTesting = getUserForTesting();
       
       chai.request(url)
       .post('/users/createuser')
@@ -102,7 +106,7 @@ describe('Users', function() {
           if (error) {
               done(error);
           } else {
-              console.log("Chai: post test: id: " + res.body + ", type: " + typeof res.body);
+              console.log("Chai: create test: id: " + res.body + ", type: " + typeof res.body);
               assert.isOk(typeof res.body === 'string');              
               
               User.findById(res.body, function (err, user){
@@ -129,6 +133,92 @@ describe('Users', function() {
               });
           }
       });       
+      
     });
   });
+  
+  // update - ideal case, test: create a user, update that user and verify
+  describe('/POST users/updateuser', function() {
+    it('should update a user', function(done) {
+      
+      chai.request(url)
+      .post('/users/createuser')
+      .set('content-type', 'application/json')
+      .send(getUserForTesting())
+      .end(function(error, res, body) {
+          if (error) {
+              done(error);
+          } else {
+            var userId = res.body;
+            var updateQuery = {
+              "gender": "female",
+              "name": {
+                "title": "miss",
+                "first": "ison",
+                "last": "id"
+              },
+              "location": {
+                "street": "97 the avenue",
+                "city": "wbridge",
+                "state": "io",
+                "zip": 782
+              },
+              "email": "ison.reid@example.com",
+              "username": "nywolf709",
+              "password": "ckon",
+              "salt": "pI10wj",
+              "md5": "dd6140e188e3bf68ae7ae67345df65",
+              "sha1": "72d25c99aa65bbf0368168f65d9770b7cacfe6",
+              "sha256": "0705aec7393e2269d4593f248e649400d4879b2209f11bb2e012628115a4eb",
+              "registered": 37176893,
+              "dob": 2871968,
+              "phone": "1-541-9181",
+              "cell": "1-647-4650",
+              "PPS": "02243T",
+              "picture": {
+                "large": "tps://randomuser.me/api/portraits/women/60.jpg",
+                "medium": "tps://randomuser.me/api/portraits/med/women/60.jpg",
+                "thumbnail": "tps://randomuser.me/api/portraits/thumb/women/60.jpg"
+              }
+            };
+            
+            chai.request(url)
+            .post('/users/updateuser')
+            .set('content-type', 'application/json')
+            .send({userId: userId, updateQuery: updateQuery})
+            .end(function(error, res, body) {
+                if (error) {
+                    done(error);
+                } else {
+                    console.log("Chai: update test: id: " + res.body + ", type: " + typeof res.body);
+                    assert.isOk(typeof res.body === 'object');              
+                    
+                    User.findById(res.body.userId, function (err, user){
+                        if (err) throw err;
+                        
+                        ["gender","name","location","email","username","password","salt","md5","sha1","sha256","registered","dob","phone","cell","PPS","picture"].forEach(function(attrToTest) {
+                          //console.log(attrToTest);
+                          //console.log(user[attrToTest]);
+                          //console.log(userForTesting[attrToTest]);
+                          assert.isOk(updateQuery[attrToTest] !== undefined);
+                          assert.isOk(userForTesting[attrToTest] !== undefined);                    
+                          assert.isOk(typeof updateQuery[attrToTest] === typeof userForTesting[attrToTest]);
+                          assert.deepEqual(updateQuery[attrToTest],userForTesting[attrToTest]);
+                        });
+                        done();
+                    });
+                }
+            });       
+          }
+        });
+      }); 
+      
+      
+      
+  });
+  
+  //update user that doesn't exist
+  
+  //update user with invalid query
+  
 });
