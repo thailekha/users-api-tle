@@ -5,6 +5,7 @@ var chaiHttp = require('chai-http');
 var seed = require('../../seed/seed');
 var User = require('../../models/user');
 var expect = require('chai').expect;
+var assert = require('chai').assert;
 
 chai.should();
 chai.use(chaiHttp);
@@ -61,34 +62,58 @@ describe('Users', function() {
   
   describe('/POST users/createuser', function() {
     it('should create a new user', function(done) {
+      var userForTesting = {
+          gender: "female",
+          name: {
+            title: "mi",
+            first: "alis",
+            last: "re"
+          },
+          location: {
+            street: "1097 the aven",
+            city: "Newbrid",
+            state: "oh",
+            zip: "287"
+          },
+          email: "alison.reid@example.c",
+          username: "tinywolf7",
+          password: "rock",
+          salt: "lypI10",
+          md5: "bbdd6140e188e3bf68ae7ae67345df",
+          sha1: "4572d25c99aa65bbf0368168f65d9770b7cacf",
+          sha256: "ec0705aec7393e2269d4593f248e649400d4879b2209f11bb2e012628115a4",
+          registered: "12371768",
+          dob: "9328719",
+          phone: "031-541-91",
+          cell: "081-647-46",
+          PPS: "330224",
+          picture: {
+            large: "https://randomuser.me/api/portraits/women/60.j",
+            medium: "https://randomuser.me/api/portraits/med/women/60.j",
+            thumbnail: "https://randomuser.me/api/portraits/thumb/women/60.j"
+          }
+      }
+      
       chai.request(url)
-        .post('/users/createuser')
-        .field('_method', 'put')
-        .field('gender','female')
-        .field('name','{title: \'mi\',first: \'alis\',last: \'re\'}')
-        .field('location','{street: \'1097 the aven\',city: \'Newbrid\',state: \'oh\',zip: 287}')
-        .field('email','alison.reid@example.c')
-        .field('username','tinywolf7')
-        .field('password','rock')
-        .field('salt','lypI10')
-        .field('md5','bbdd6140e188e3bf68ae7ae67345df')
-        .field('sha1','4572d25c99aa65bbf0368168f65d9770b7cacf')
-        .field('sha256','ec0705aec7393e2269d4593f248e649400d4879b2209f11bb2e012628115a4')
-        .field('registered','12371768')
-        .field('dob','9328719')
-        .field('phone','031-541-91')
-        .field('cell','081-647-46')
-        .field('PPS','330224')
-        .field('picture','{large: \'https://randomuser.me/api/portraits/women/60.j\',medium: \'https://randomuser.me/api/portraits/med/women/60.j\',thumbnail: \'https://randomuser.me/api/portraits/thumb/women/60.j\'}')
-        .end(function(err,res) {
-          
-          //after creating a new user, app should return the id of the new user
-          expect(res.body).to.be.a('object');
-          expect(res.body.querystatus).to.be.eql(999);
-          //expect(res).to.have.body('array');
-          //res.should.have.status(200);
-          done();
-        });
+      .post('/users/createuser')
+      .set('content-type', 'application/json')
+      .send(userForTesting)
+      .end(function(error, response, body) {
+          if (error) {
+              done(error);
+          } else {
+              assert.isOk(typeof res.body === 'number');
+              User.findById(res.body, function (err, user){
+                  if (err) throw err;
+
+                  // show the one user
+                  console.log(user);
+                  assert.deepEqual(userForTesting,user);
+                  done();
+              });
+          }
+      });
+        
     });
   });
 });
