@@ -220,7 +220,7 @@ Create a new user
 
 * **Data Params**
 
-  ```
+  ```javascript
   {
     gender: String,
     name: {
@@ -339,7 +339,7 @@ Delete a user
   **Content:**
 
   ```javascript
-  { "error": "Error listing users" }
+  { "error": "Error reading user" }
   ```
 
 * **Sample Call:**
@@ -379,7 +379,40 @@ Update a user
 
 * **Data Params**
 
-  None
+  **Any of User's model's attribute, ie. :**
+  ```javascript
+  {
+    gender: String,
+    name: {
+      title: String,
+      first: String,
+      last: String
+    },
+    location: {
+      street: String,
+      city: String,
+      state: String,
+      zip: Number
+    },
+    email: String,
+    username: String,
+    password: String,
+    salt: String,
+    md5: String,
+    sha1: String,
+    sha256: String,
+    registered: Number,
+    dob: Number,
+    phone: String,
+    cell: String,
+    PPS: String,
+    picture: {
+      large: String,
+      medium: String,
+      thumbnail: String
+    }
+  }
+  ```
 
 * **Success Response:**
 
@@ -422,6 +455,57 @@ Update a user
 
   $.ajax(settings).done(function (response) {
     console.log(response);
+  });
+  ```
+
+**Delete all**
+----
+Delete all users
+
+* **URL**
+
+  `/deleteall`
+
+* **Method:**
+
+  `GET`
+
+*  **URL Params**
+
+  None
+  
+* **Data Params**
+
+  None
+
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content:**
+
+    ```javascript
+    []
+    ```
+
+* **Error Response:**
+
+* **Code:** 500 INTERNAL SERVER ERROR <br />
+  **Content:**
+
+  ```javascript
+  { "error": "Error gathering users" }
+  ```
+
+* **Sample Call:**
+
+  ```javascript
+  $.ajax({
+    url: "/deleteall",
+    dataType: "json",
+    type : "GET",
+    success : function(r) {
+      console.log(r);
+    }
   });
   ```
 

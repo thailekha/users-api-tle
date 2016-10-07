@@ -297,20 +297,23 @@ describe('Users', function() {
       chai.request(url)
         .get('/deleteall')
         .end(function(err, res) {
-          //console.log('got respond');
-          //console.log(res);
           res.should.have.status(200);
           User.find({}, function(err, users) {
             if (err) {
               return res.status(500).json({
-                error: "Error listing users: " + err
+                error: "Error gathering users:: " + err
               });
             }
-
             assert.equal(users.length,0);
             done();
           });
         });
     });
   });
+  
+  //More tests can be written:  
+  //any task on a user that does not exist
+  //update or create user with invalid query
+  //update a user with a query that could potentially make him/her duplicate with other user
+  //etc.
 });

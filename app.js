@@ -8,7 +8,6 @@ var fs = require('fs');
 var logger = require('winston');
 var userController = require('./controllers/users');
 var User = require('./models/user');
-//var wipeController = require('./controllers/wipe');
 
 mongoose.Promise = global.Promise;
 
@@ -41,12 +40,11 @@ app.get('/deleteall/', function(req,res) {
     console.log("REMOVED");
     if (err) {
       return res.status(500).json({
-        error: "Error reading user: " + err
+        error: "Error gathering users: " + err
       });
     }
-    res.json(users);
+    res.status(200).json(users);
   });
-  //res.json([]);
 });
 
 // See the User Controller for `/users` routes

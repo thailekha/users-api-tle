@@ -42,25 +42,6 @@ router.get('/:id', function(req, res) {
   });
 });
 
-//GET /users/username/:username
-router.get('/username/:username', function(req,res) {
-  User.find({
-    username: req.params.username
-  }, function(err, user) {
-    if (err) {
-      return res.status(500).json({
-        error: "Error reading user: " + err
-      });
-    }
-
-    if (!user) {
-      return res.status(404).end();
-    }
-
-    res.json(user);
-  });
-});
-
 /* The following block is the implementation of the verifying duplication process of the /createuser request but results in timeout error
 
 
@@ -195,9 +176,29 @@ router.post('/updateuser', function(req,res) {
   });
 });
 
-//Default route
-router.get('/*',function(req,res){
+//GET /users/username/:username (for testing)
+/* router.get('/username/:username', function(req,res) {
+  User.find({
+    username: req.params.username
+  }, function(err, user) {
+    if (err) {
+      return res.status(500).json({
+        error: "Error reading user: " + err
+      });
+    }
+
+    if (!user) {
+      return res.status(404).end();
+    }
+
+    res.json(user);
+  });
+}); */
+
+//Default route (for testing)
+/* router.get('/*',function(req,res){
   console.log("Default route hit in /users scope");
   res.json("Default route");
-});
+}); */
+
 module.exports = router;
