@@ -80,6 +80,17 @@ function getUpdateQuery() {
   };
 }
 
+function removeAllUsers() {
+  User.remove({}, function(err, users) {
+    console.log("REMOVED");
+    if (err) {
+      return res.status(500).json({
+        error: "Error reading user: " + err
+      });
+    }
+  });
+}
+
 describe('Users', function() {
 
   // Before our test suite
@@ -215,7 +226,8 @@ describe('Users', function() {
   
   // create user, delete created user, verify
   describe('/GET users/deleteuser/:id', function() {
-    it('should delete a single user', function(done) {     
+    it('should delete a single user', function(done) {  
+      removeAllUsers();
       //create user
       var userForTesting = getUserForTesting();  
       chai.request(url)
@@ -232,6 +244,7 @@ describe('Users', function() {
             chai.request(url)
             .get('/users/deleteuser/' + userId)
             .end(function(err, res) {
+              console.log(res.body);
               assert.isOk(typeof res.body === 'string');
               assert.equal(res.body, 'user deleted');
               done();
@@ -247,7 +260,7 @@ describe('Users', function() {
   // update - ideal case, test: create a user, update that user and verify
   describe('/POST users/updateuser', function() {
     it('should update a user', function(done) {
-          
+      removeAllUsers();
       //First create user
       chai.request(url)
       .post('/users/createuser')

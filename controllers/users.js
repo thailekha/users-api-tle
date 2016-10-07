@@ -83,7 +83,7 @@ router.post('/createuser', function(req,res) {
   var noDuplicateAllowed = ["username","email","PPS"];
   for(var i = 0; i < noDuplicateAllowed.length; i++) {  
     var attr = noDuplicateAllowed[i];
-    console.log(attr + "<->" + newUser[attr]);
+    //console.log(attr + "<->" + newUser[attr]);
     //empty find means all rows of instance in db
     noDuplicateAllowed[i] = User.find({}).where(attr).equals(newUser[attr]); //build queries
   }
