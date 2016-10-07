@@ -7,6 +7,7 @@ var marked = require('marked');
 var fs = require('fs');
 var logger = require('winston');
 var userController = require('./controllers/users');
+var User = require('./models/user');
 //var wipeController = require('./controllers/wipe');
 
 mongoose.Promise = global.Promise;
@@ -36,17 +37,16 @@ app.get('/', function(req, res, err) { // eslint-disable-line no-unused-vars
 
 app.get('/deleteall/', function(req,res) {
   console.log("REMOVING");
-  /* User.remove({}, function(err, users) {
+  User.remove({}, function(err, users) {
     console.log("REMOVED");
-    cosnole.log(users);
     if (err) {
       return res.status(500).json({
         error: "Error reading user: " + err
       });
     }
     res.json(users);
-  }); */
-  res.json([]);
+  });
+  //res.json([]);
 });
 
 // See the User Controller for `/users` routes

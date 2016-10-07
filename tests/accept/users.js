@@ -26,8 +26,8 @@ function getUserForTesting() {
           "state": "ohio",
           "zip": 28782
         },
-        "email": "alison.reid@example.com",
-        "username": "tinywolf709",
+        "email": "superwierdemail",
+        "username": "superwierdusername",
         "password": "rockon",
         "salt": "lypI10wj",
         "md5": "bbdd6140e188e3bf68ae7ae67345df65",
@@ -37,7 +37,7 @@ function getUserForTesting() {
         "dob": 932871968,
         "phone": "031-541-9181",
         "cell": "081-647-4650",
-        "PPS": "3302243T",
+        "PPS": "123321123321",
         "picture": {
           "large": "https://randomuser.me/api/portraits/women/60.jpg",
           "medium": "https://randomuser.me/api/portraits/med/women/60.jpg",
@@ -109,29 +109,6 @@ describe('Users', function() {
           res.should.have.status(200);
           res.body.length.should.be.eql(100);
           done();
-        });
-    });
-  });
-  
-  //delete all users
-  describe('/GET deleteall', function() {
-    it('should delete all users and return empty array', function(done) {
-      chai.request(url)
-        .get('/deleteall')
-        .end(function(err, res) {
-          console.log('got respond');
-          //console.log(res);
-          res.should.have.status(200);
-          User.find({}, function(err, users) {
-            if (err) {
-              return res.status(500).json({
-                error: "Error listing users: " + err
-              });
-            }
-
-            assert.equal(users.length,0);
-            done();
-          });
         });
     });
   });
@@ -305,6 +282,29 @@ describe('Users', function() {
       
       
       
+  });
+  
+    //delete all users
+  describe('/GET deleteall', function() {
+    it('should delete all users and return empty array', function(done) {
+      chai.request(url)
+        .get('/deleteall')
+        .end(function(err, res) {
+          console.log('got respond');
+          //console.log(res);
+          res.should.have.status(200);
+          User.find({}, function(err, users) {
+            if (err) {
+              return res.status(500).json({
+                error: "Error listing users: " + err
+              });
+            }
+
+            assert.equal(users.length,0);
+            done();
+          });
+        });
+    });
   });
   
   //update user that doesn't exist

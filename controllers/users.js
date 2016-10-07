@@ -80,26 +80,23 @@ router.post('/createuser', function(req,res) {
   var duplicated = false;
   
   //check duplicate instances
-  var noDuplicateAllowed = ["username","email","pps"];
+  var noDuplicateAllowed = ["username","email","PPS"];
   for(var i = 0; i < noDuplicateAllowed.length; i++) {  
     var attr = noDuplicateAllowed[i];
-    
+    console.log(attr + "<->" + newUser[attr]);
     //empty find means all rows of instance in db
     noDuplicateAllowed[i] = User.find({}).where(attr).equals(newUser[attr]); //build queries
-    //exec(callback);
   }
   
   //var counter = 0;
   noDuplicateAllowed[0].exec(function(err,user) {
     console.log('0');
-    console.log(err);
-    //console.log(user);
     if (err) {
       return res.status(500).json({
         error: "Error reading user: " + err
       });
     }
-    if(!user) {
+    if(user.length === 0) {
       noDuplicateAllowed[1].exec(function(err,user) {
         console.log('1');
         if (err) {
@@ -107,7 +104,7 @@ router.post('/createuser', function(req,res) {
             error: "Error reading user: " + err
           });
         }
-        if(!user) {
+        if(user.length === 0) {
           noDuplicateAllowed[2].exec(function(err,user) {
             console.log('2');
             if (err) {
@@ -115,7 +112,8 @@ router.post('/createuser', function(req,res) {
                 error: "Error reading user: " + err
               });
             }
-            if(user) {
+            //console.log("Length : " + user.length);
+            if(user.length !== 0) {
               res.json({createStatus: "user existed"});
             }
             else {
