@@ -244,6 +244,7 @@ describe('Users', function() {
             .get('/users/deleteuser/' + userId)
             .end(function(err, res) {
               //console.log(res.body);
+              res.should.have.status(200);
               assert.isOk(typeof res.body === 'string');
               assert.equal(res.body, 'user deleted');
               done();

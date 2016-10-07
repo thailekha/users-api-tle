@@ -303,4 +303,63 @@ Create a new user
   });
   ```
 
+**Delete user**
+----
+Delete a user
+
+* **URL**
+
+  `/users/deleteuser/:id`
+
+* **Method:**
+
+  `GET`
+
+*  **URL Params**
+
+  **Required:**
+  `id=[string]`
+
+* **Data Params**
+
+  None
+
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content:**
+
+    ```javascript
+    'user deleted'
+    ```
+
+* **Error Response:**
+
+* **Code:** 500 INTERNAL SERVER ERROR <br />
+  **Content:**
+
+  ```javascript
+  { "error": "Error listing users" }
+  ```
+
+* **Sample Call:**
+
+  ```javascript
+  var settings = {
+    "async": true,
+    "crossDomain": true,
+    "url": "http://localhost:8000/users/deleteuser/57f7fb05d6cfe12ef4f55db2",
+    "method": "GET",
+    "headers": {
+      "cache-control": "no-cache",
+      "postman-token": "b0e9da5e-75e9-daa7-b98f-bd39909e1f4b"
+    }
+  }
+
+  $.ajax(settings).done(function (response) {
+    console.log(response);
+  });
+  ```
+  
+  
 Inspired by https://gist.github.com/iros/3426278

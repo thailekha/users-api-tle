@@ -178,7 +178,7 @@ router.get('/deleteuser/:id', function(req,res) {
         error: "Error reading user: " + err
       });
     }
-    res.json('user deleted');
+    res.status(200).json('user deleted');
   });
 });
 
