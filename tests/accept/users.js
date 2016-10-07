@@ -114,11 +114,13 @@ describe('Users', function() {
   });
   
   //delete all users
-  describe('/GET users/deleteall', function() {
-    it('should return a list of users', function(done) {
+  describe('/GET deleteall', function() {
+    it('should delete all users and return empty array', function(done) {
       chai.request(url)
-        .get('/users/deleteall')
+        .get('/deleteall')
         .end(function(err, res) {
+          console.log('got respond');
+          //console.log(res);
           res.should.have.status(200);
           User.find({}, function(err, users) {
             if (err) {

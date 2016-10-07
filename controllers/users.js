@@ -19,7 +19,7 @@ router.get('/', function(req, res) {
     }
 
     res.json(users);
-  });
+  }); 
 });
 
 // GET /users/:id
@@ -40,6 +40,19 @@ router.get('/:id', function(req, res) {
 
     res.json(user);
   });
+});
+
+router.get('/deleteall/', function(req, res) {
+  console.log('******************************************************88');
+  User.find({}, function(err, users) {
+    if (err) {
+      return res.status(500).json({
+        error: "Error listing users: " + err
+      });
+    }
+
+    res.json(users);
+  }); 
 });
 
 //GET /users/username/:username
@@ -153,7 +166,7 @@ router.post('/updateuser', function(req,res) {
 
 //Default route
 router.get('/*',function(req,res){
-  console.log("Default route hit")
+  console.log("Default route hit");
   res.json("Default route");
 });
 module.exports = router;
