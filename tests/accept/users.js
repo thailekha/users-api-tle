@@ -183,25 +183,18 @@ describe('Users', function() {
           if (error) {
               done(error);
           } else {
-              var userId = res.body;
-              //delete user
-              chai.request(url)
-              .get('/users/deleteuser/' + userId)
-              .end(function(err, res) {
-                console.log('~~~~~`');
-                console.log(res.body);
-                for(var x in res.body) {
-                  console.log(x);
-                  console.log(res.body.x);
-                }
-                assert.isOk(typeof res.body === 'string');              
-                
-                User.findById(res.body, function (err, user){
-                  if (err) throw err;
-                  assertEqual(user,null);
-                  done();
-                });
-              });
+            var userId = res.body;
+            console.log(typeof userId);
+            //delete user
+            chai.request(url)
+            .get('/users/deleteuser/' + userId)
+            .end(function(err, res) {
+              console.log('~~~~~`');
+              //console.log(res.body);
+              assert.isOk(typeof res.body === 'string');
+              assert.equal(res.body, 'user deleted');
+              done();
+            });
           }
       });     
       
@@ -226,9 +219,6 @@ describe('Users', function() {
             
             //Then update the created user
             var updateRequestBody = {userId: res.body, updateQuery: getUpdateQuery()};
-            /* for(var i = 0; i < 10; i ++) 
-              console.log("*");
-            console.log(updateRequestBody); */
             
             chai.request(url)
             .post('/users/updateuser')
@@ -237,24 +227,13 @@ describe('Users', function() {
             .end(function(error, res, body) {
                 if (error) {
                     done(error);
-                } else {
-                    //console.log("Chai: update test: id: " + res.body + ", type: " + typeof res.body);
-                    assert.isOk(typeof res.body === 'object');              
-                    assert.equal(res.body.updateStatus,'updated user');
-                    User.findById(res.body.userId, function (err, user){
-                        if (err) throw err;
-                        var updateQuery = getUpdateQuery();
-                        ["gender","name","location","email","username","password","salt","md5","sha1","sha256","registered","dob","phone","cell","PPS","picture"].forEach(function(attrToTest) {                          
-                          //console.log(attrToTest);
-                          //console.log(updateQuery[attrToTest]);
-                          //console.log(user[attrToTest]);
-                          assert.isOk(updateQuery[attrToTest] !== undefined);
-                          assert.isOk(user[attrToTest] !== undefined);                    
-                          assert.isOk(typeof updateQuery[attrToTest] === typeof user[attrToTest]);
-                          assert.deepEqual(updateQuery[attrToTest],user[attrToTest]);
-                        });
-                        done();
-                    });
+                } else {                    
+                  //{ ok: 1, nModified: 1, n: 1 }
+                  console.log(res.body);
+                  assert.equal(res.body['ok'],1);
+                  assert.equal(res.body['nModified'],1);
+                  assert.equal(res.body['n'],1);
+                  done();
                 }
             });       
           }

@@ -59,44 +59,27 @@ router.post('/createuser', function(req,res) {
 });
 
 //GET /users/deleteuser/:id
-router.get('/deleteuser/:id', function(req,res) {
-  console.log("start of delte method");
-  User.findOne({
-    _id: req.params.id
-  }, function(err, user) {
+router.get('/deleteuser/:id', function(req,res) {  
+  User.findByIdAndRemove(req.params.id, function(err) {
     if (err) {
       return res.status(500).json({
         error: "Error reading user: " + err
       });
     }
-
-    if (!user) {
-      return res.status(404).end();
-    }
-    
-    console.log("End of delte method");
-    res.json("Found user to remove");
+    res.json('user deleted');
   });
 });
 
+//POST /users/updateuser
 router.post('/updateuser', function(req,res) {
-  //console.log("Users controller: got update request, request id: " + req.body.updateQuery );
-  User.findById(req.body.userId, function (err, user){
-      if (err) throw err;
-      //console.log('Users controller: found user for updating: ' + user);
-      var updateQuery = req.body.updateQuery;
-      
-      //console.log("***********Old user: ");
-      //console.log(user);
-      for(var attr in updateQuery) {
-        user.attr = updateQuery.attr;
-      }
-      user.save().then(function(updatedUser) {
-        //console.log("***********Updated user: ");
-        //console.log(updatedUser);
-        res.json({updateStatus: "updated user", userId: updatedUser._id});
+  User.where({ _id: req.body.userId }).update(req.body.updateQuery, function(err,updatedUser) {
+    if (err) {
+      return res.status(500).json({
+        error: "Error reading user: " + err
       });
-  });  
+    }
+    res.json(updatedUser);
+  });
 });
 
 //Default route
