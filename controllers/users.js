@@ -44,7 +44,7 @@ router.get('/:id', function(req, res) {
 
 //GET /users/username/:username
 router.get('/username/:username', function(req,res) {
-  User.findOne({
+  User.find({
     username: req.params.username
   }, function(err, user) {
     if (err) {
@@ -73,7 +73,7 @@ router.post('/createuser', function(req,res) {
     } */ 
     console.log("New user created, id: " + addedUser._id + ", id type: " + typeof addedUser._id);
     //console.log(addedUser);
-    res.json(addedUser._id);
+    res.json({createStatus: "user created" , userId:addedUser._id});
   });
 });
 

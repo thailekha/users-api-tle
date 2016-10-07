@@ -94,6 +94,11 @@ describe('Users', function() {
       });
     });
   });
+  
+  /* after(function(done) {
+    if(delete userForTesting)
+      console.log('deleted userForTesting var');
+  }); */
 
   describe('/GET users', function() {
     it('should return a list of users', function(done) {
@@ -141,9 +146,10 @@ describe('Users', function() {
               done(error);
           } else {
               //console.log("Chai: create test: id: " + res.body + ", type: " + typeof res.body);
-              assert.isOk(typeof res.body === 'string');              
+              assert.isOk(typeof res.body === 'object');              
+              assert.equal(res.body['createStatus'],'user created');
               
-              User.findById(res.body, function (err, user){
+              User.findById(res.body['userId'], function (err, user){
                   if (err) throw err;
                   //console.log(user);
                   
@@ -172,6 +178,38 @@ describe('Users', function() {
   });
   
   //create a duplicate user
+  /* describe('/POST users/createuser', function() {
+    it('should create a new user', function(done) {
+      var userForTesting = getUserForTesting();
+      
+      chai.request(url)
+      .post('/users/createuser')
+      .set('content-type', 'application/json')
+      .send(userForTesting)
+      .end(function(error, res, body) {
+          if (error) {
+              done(error);
+          } else {
+              
+              assert.isOk(typeof res.body === 'string');              
+              chai.request(url)
+              .post('/users/createuser')
+              .set('content-type', 'application/json')
+              .send(userForTesting)
+              .end(function(error, res, body) {
+                  if (error) {
+                      done(error);
+                  } else {
+                      
+                      assert.isOk(typeof res.body === 'string');              
+                      
+                  }
+              });    
+          }
+      });       
+      
+    });
+  }); */
   
   // create user, delete created user, verify
   describe('/GET users/deleteuser/:id', function() {
@@ -186,7 +224,7 @@ describe('Users', function() {
           if (error) {
               done(error);
           } else {
-            var userId = res.body;
+            var userId = res.body['userId'];
             console.log(typeof userId);
             //delete user
             chai.request(url)
@@ -219,7 +257,7 @@ describe('Users', function() {
           } else {
             
             //Then update the created user
-            var updateRequestBody = {userId: res.body, updateQuery: getUpdateQuery()};
+            var updateRequestBody = {userId: res.body['userId'], updateQuery: getUpdateQuery()};
             
             chai.request(url)
             .post('/users/updateuser')
