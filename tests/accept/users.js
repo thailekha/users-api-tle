@@ -177,8 +177,8 @@ describe('Users', function() {
     });
   });
   
-  //create a duplicate user
-  /* describe('/POST users/createuser', function() {
+  //create users with duplicate username, email, pps
+  describe('/POST users/createuser', function() {
     it('should create a new user', function(done) {
       var userForTesting = getUserForTesting();
       
@@ -190,8 +190,6 @@ describe('Users', function() {
           if (error) {
               done(error);
           } else {
-              
-              assert.isOk(typeof res.body === 'string');              
               chai.request(url)
               .post('/users/createuser')
               .set('content-type', 'application/json')
@@ -200,16 +198,16 @@ describe('Users', function() {
                   if (error) {
                       done(error);
                   } else {
-                      
-                      assert.isOk(typeof res.body === 'string');              
-                      
+                      assert.isOk(typeof res.body === 'object');
+                      assert.equal(res.body['createStatus'], 'user existed');                     
+                      assert.equal(res.body['userId'],undefined);                    
                   }
               });    
           }
       });       
       
     });
-  }); */
+  });
   
   // create user, delete created user, verify
   describe('/GET users/deleteuser/:id', function() {
