@@ -61,7 +61,10 @@ router.get('/username/:username', function(req,res) {
   });
 });
 
-/* function noDuplicateUser(newUser,queries,counter) {
+/* The following block is the implementation of the verifying duplication process of the /createuser request but results in timeout error
+
+
+  function noDuplicateUser(newUser,queries,counter) {
   if(queries.length - 1 === counter) {
     //if only 1 item in the queries
     queries[counter].exec(function(err,user) {
@@ -121,26 +124,26 @@ router.post('/createuser', function(req,res) {
   
   //check duplicate instances, then create a new user
   noDuplicateAllowed[0].exec(function(err,user) {
-    console.log('0');
+    //console.log('0');
     if (err) {
       return res.status(500).json({
-        error: "Error reading user: " + err
+        error: "Error checking duplicate users: " + err
       });
     }
     if(user.length === 0) {
       noDuplicateAllowed[1].exec(function(err,user) {
-        console.log('1');
+        //console.log('1');
         if (err) {
           return res.status(500).json({
-            error: "Error reading user: " + err
+            error: "Error checking duplicate users: " + err
           });
         }
         if(user.length === 0) {
           noDuplicateAllowed[2].exec(function(err,user) {
-            console.log('2');
+            //console.log('2');
             if (err) {
               return res.status(500).json({
-                error: "Error reading user: " + err
+                error: "Error checking duplicate users: " + err
               });
             }
             //console.log("Length : " + user.length);

@@ -202,5 +202,105 @@ Returns a list of Users
     }
   });
   ```
+**Create user**
+----
+Create a new user
+
+* **URL**
+
+  `/users/createuser`
+
+* **Method:**
+
+  `POST`
+
+*  **URL Params**
+
+  None
+
+* **Data Params**
+
+  ```
+  {
+    gender: String,
+    name: {
+      title: String,
+      first: String,
+      last: String
+    },
+    location: {
+      street: String,
+      city: String,
+      state: String,
+      zip: Number
+    },
+    email: String,
+    username: String,
+    password: String,
+    salt: String,
+    md5: String,
+    sha1: String,
+    sha256: String,
+    registered: Number,
+    dob: Number,
+    phone: String,
+    cell: String,
+    PPS: String,
+    picture: {
+      large: String,
+      medium: String,
+      thumbnail: String
+    }
+  }
+  ```
+
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content:**
+
+    ```javascript
+    {
+      createStatus: "user created" , 
+      userId: object
+    }
+    ```
+    **If user already existed:**
+    ```javascript
+    {
+      createStatus: "user existed"
+    }
+    ```
+    
+* **Error Response:**
+
+* **Code:** 500 INTERNAL SERVER ERROR <br />
+  **Content:**
+
+  ```javascript
+  { error: Error checking duplicate users: }
+  ```
+
+* **Sample Call:**
+
+  ```javascript
+  var settings = {
+    "async": true,
+    "crossDomain": true,
+    "url": "http://localhost:8000/users/createuser",
+    "method": "POST",
+    "headers": {
+      "content-type": "application/json",
+      "cache-control": "no-cache",
+      "postman-token": "953268b4-c11a-759b-9b3e-20237960c834"
+    },
+    "processData": false,
+    "data": "{\r\n    \"gender\": \"female\",\r\n    \"name\": {\r\n      \"title\": \"mi\",\r\n      \"first\": \"alis\",\r\n      \"last\": \"re\"\r\n    },\r\n    \"location\": {\r\n      \"street\": \"1097 the aven\",\r\n      \"city\": \"Newbrid\",\r\n      \"state\": \"oh\",\r\n      \"zip\": 287\r\n    },\r\n    \"email\": \"alison.reid@example.c\",\r\n    \"username\": \"tinywolf7\",\r\n    \"password\": \"rock\",\r\n    \"salt\": \"lypI10\",\r\n    \"md5\": \"bbdd6140e188e3bf68ae7ae67345df\",\r\n    \"sha1\": \"4572d25c99aa65bbf0368168f65d9770b7cacf\",\r\n    \"sha256\": \"ec0705aec7393e2269d4593f248e649400d4879b2209f11bb2e012628115a4\",\r\n    \"registered\": 12371768,\r\n    \"dob\": 9328719,\r\n    \"phone\": \"031-541-91\",\r\n    \"cell\": \"081-647-46\",\r\n    \"PPS\": \"330224\",\r\n    \"picture\": {\r\n      \"large\": \"https://randomuser.me/api/portraits/women/60.j\",\r\n      \"medium\": \"https://randomuser.me/api/portraits/med/women/60.j\",\r\n      \"thumbnail\": \"https://randomuser.me/api/portraits/thumb/women/60.j\"\r\n    }\r\n}"
+  }
+
+  $.ajax(settings).done(function (response) {
+    console.log(response);
+  });
+  ```
 
 Inspired by https://gist.github.com/iros/3426278

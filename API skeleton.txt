@@ -1,0 +1,50 @@
+**List Users**
+----
+Returns a list of Users
+
+* **URL**
+
+  `/users`
+
+* **Method:**
+
+  `GET`
+
+*  **URL Params**
+
+  None
+
+* **Data Params**
+
+  None
+
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content:**
+
+    ```javascript
+    [{}]
+    ```
+
+* **Error Response:**
+
+* **Code:** 500 INTERNAL SERVER ERROR <br />
+  **Content:**
+
+  ```javascript
+  { "error": "Error listing users" }
+  ```
+
+* **Sample Call:**
+
+  ```javascript
+  $.ajax({
+    url: "/users",
+    dataType: "json",
+    type : "GET",
+    success : function(r) {
+      console.log(r);
+    }
+  });
+  ```

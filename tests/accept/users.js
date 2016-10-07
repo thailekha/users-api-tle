@@ -12,6 +12,7 @@ chai.use(chaiHttp);
 
 var url = 'http://127.0.0.1:8001';
 
+//return a sample user for testing
 function getUserForTesting() {
   return {
         "gender": "female",
@@ -46,6 +47,7 @@ function getUserForTesting() {
       };
 }
 
+//return an object having same structure as user model for updating
 function getUpdateQuery() {
   return {
     "gender": "female",
@@ -80,9 +82,10 @@ function getUpdateQuery() {
   };
 }
 
+//remove all users in database, a reset mechansim for some tests
 function removeAllUsers() {
   User.remove({}, function(err, users) {
-    console.log("REMOVED");
+    console.log("ALL USERS REMOVED");
     if (err) {
       return res.status(500).json({
         error: "Error reading user: " + err
@@ -156,21 +159,16 @@ describe('Users', function() {
           if (error) {
               done(error);
           } else {
+              res.should.have.status(200);
               //console.log("Chai: create test: id: " + res.body + ", type: " + typeof res.body);
               assert.isOk(typeof res.body === 'object');              
               assert.equal(res.body['createStatus'],'user created');
               
+              //The response after creating the user contains new user's id, use this id to find the user object in database and check against the user object used for creating
               User.findById(res.body['userId'], function (err, user){
                   if (err) throw err;
-                  //console.log(user);
                   
-                  //assert.deepEqual(userForTesting,user);
-                  /* for(var attr in user) {
-                    console.log(attr);
-                    assert.isOk(userForTesting.attr !== undefined);
-                    assert.deepEqual(user.attr,userForTesting.attr);
-                  } */
-                  
+                  //Check all attibutes
                   ["gender","name","location","email","username","password","salt","md5","sha1","sha256","registered","dob","phone","cell","PPS","picture"].forEach(function(attrToTest) {
                     //console.log(attrToTest);
                     //console.log(user[attrToTest]);
@@ -188,9 +186,9 @@ describe('Users', function() {
     });
   });
   
-  //create users with duplicate username, email, pps
+  //users with duplicate username, email, pps are not allowed
   describe('/POST users/createuser', function() {
-    it('should create a new user', function(done) {
+    it('users with duplicate username, email, pps are not allowed', function(done) {
       removeAllUsers();
       var userForTesting = getUserForTesting();      
       chai.request(url)
@@ -201,8 +199,8 @@ describe('Users', function() {
           if (error) {
               done(error);
           } else {
-              console.log("create the testing user 1st time");
-              console.log("now create the testing user 2nd time");
+              //console.log("create the testing user 1st time");
+              //console.log("now create the testing user 2nd time");
               chai.request(url)
               .post('/users/createuser')
               .set('content-type', 'application/json')
@@ -211,7 +209,7 @@ describe('Users', function() {
                   if (error) {
                       done(error);
                   } else {
-                      console.log("user created 2nd time");
+                      //console.log("user created 2nd time");
                       assert.isOk(typeof res.body === 'object');
                       assert.equal(res.body['createStatus'], 'user existed');                     
                       assert.equal(res.body['userId'],undefined);
@@ -223,6 +221,7 @@ describe('Users', function() {
       
     });
   });
+  
   
   // create user, delete created user, verify
   describe('/GET users/deleteuser/:id', function() {
@@ -239,12 +238,12 @@ describe('Users', function() {
               done(error);
           } else {
             var userId = res.body['userId'];
-            console.log(typeof userId);
+            //console.log(typeof userId);
             //delete user
             chai.request(url)
             .get('/users/deleteuser/' + userId)
             .end(function(err, res) {
-              console.log(res.body);
+              //console.log(res.body);
               assert.isOk(typeof res.body === 'string');
               assert.equal(res.body, 'user deleted');
               done();
@@ -255,7 +254,7 @@ describe('Users', function() {
     });
   }); 
   
-  // update - ideal case, test: create a user, update that user and verify
+  // update - ideal case, test procedure: create a user then update that user
   describe('/POST users/updateuser', function() {
     it('should update a user', function(done) {
       removeAllUsers();
@@ -289,10 +288,7 @@ describe('Users', function() {
             });       
           }
         });
-      }); 
-      
-      
-      
+      });
   });
   
     //delete all users
@@ -301,7 +297,7 @@ describe('Users', function() {
       chai.request(url)
         .get('/deleteall')
         .end(function(err, res) {
-          console.log('got respond');
+          //console.log('got respond');
           //console.log(res);
           res.should.have.status(200);
           User.find({}, function(err, users) {
@@ -317,9 +313,7 @@ describe('Users', function() {
         });
     });
   });
-  
-  //update user that doesn't exist
-  
+
   //update user with invalid query
   
 });
