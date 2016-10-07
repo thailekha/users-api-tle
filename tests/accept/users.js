@@ -112,7 +112,28 @@ describe('Users', function() {
         });
     });
   });
+  
+  //delete all users
+  describe('/GET users/deleteall', function() {
+    it('should return a list of users', function(done) {
+      chai.request(url)
+        .get('/users/deleteall')
+        .end(function(err, res) {
+          res.should.have.status(200);
+          User.find({}, function(err, users) {
+            if (err) {
+              return res.status(500).json({
+                error: "Error listing users: " + err
+              });
+            }
 
+            assert.equal(users.length,0);
+            done();
+          });
+        });
+    });
+  });
+  
   describe('/GET users/:id', function() {
     it('should return a single user', function(done) {
       // Find a user in the DB
@@ -178,7 +199,7 @@ describe('Users', function() {
   });
   
   //create users with duplicate username, email, pps
-  describe('/POST users/createuser', function() {
+  /* describe('/POST users/createuser', function() {
     it('should create a new user', function(done) {
       var userForTesting = getUserForTesting();
       
@@ -211,7 +232,7 @@ describe('Users', function() {
       });       
       
     });
-  });
+  }); */
   
   // create user, delete created user, verify
   describe('/GET users/deleteuser/:id', function() {
