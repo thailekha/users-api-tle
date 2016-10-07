@@ -189,11 +189,10 @@ describe('Users', function() {
   });
   
   //create users with duplicate username, email, pps
-  /* describe('/POST users/createuser', function() {
+  describe('/POST users/createuser', function() {
     it('should create a new user', function(done) {
-      var userForTesting = getUserForTesting();
-      
-      
+      removeAllUsers();
+      var userForTesting = getUserForTesting();      
       chai.request(url)
       .post('/users/createuser')
       .set('content-type', 'application/json')
@@ -215,14 +214,15 @@ describe('Users', function() {
                       console.log("user created 2nd time");
                       assert.isOk(typeof res.body === 'object');
                       assert.equal(res.body['createStatus'], 'user existed');                     
-                      assert.equal(res.body['userId'],undefined);                    
+                      assert.equal(res.body['userId'],undefined);
+                      done();
                   }
               });    
           }
       });       
       
     });
-  }); */
+  });
   
   // create user, delete created user, verify
   describe('/GET users/deleteuser/:id', function() {
