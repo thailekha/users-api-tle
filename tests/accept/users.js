@@ -189,8 +189,6 @@ describe('Users', function() {
             chai.request(url)
             .get('/users/deleteuser/' + userId)
             .end(function(err, res) {
-              console.log('~~~~~`');
-              //console.log(res.body);
               assert.isOk(typeof res.body === 'string');
               assert.equal(res.body, 'user deleted');
               done();
@@ -229,7 +227,6 @@ describe('Users', function() {
                     done(error);
                 } else {                    
                   //{ ok: 1, nModified: 1, n: 1 }
-                  console.log(res.body);
                   assert.equal(res.body['ok'],1);
                   assert.equal(res.body['nModified'],1);
                   assert.equal(res.body['n'],1);

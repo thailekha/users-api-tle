@@ -42,7 +42,26 @@ router.get('/:id', function(req, res) {
   });
 });
 
-//POST /users/createutes
+//GET /users/username/:username
+router.get('/username/:username', function(req,res) {
+  User.findOne({
+    username: req.params.username
+  }, function(err, user) {
+    if (err) {
+      return res.status(500).json({
+        error: "Error reading user: " + err
+      });
+    }
+
+    if (!user) {
+      return res.status(404).end();
+    }
+
+    res.json(user);
+  });
+});
+
+//POST /users/createuser
 router.post('/createuser', function(req,res) {
   var newUser = new User(req.body);  
   newUser.save().then(function(addedUser) {
