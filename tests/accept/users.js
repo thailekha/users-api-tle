@@ -182,6 +182,7 @@ describe('Users', function() {
     it('should create a new user', function(done) {
       var userForTesting = getUserForTesting();
       
+      
       chai.request(url)
       .post('/users/createuser')
       .set('content-type', 'application/json')
@@ -190,6 +191,8 @@ describe('Users', function() {
           if (error) {
               done(error);
           } else {
+              console.log("create the testing user 1st time");
+              console.log("now create the testing user 2nd time");
               chai.request(url)
               .post('/users/createuser')
               .set('content-type', 'application/json')
@@ -198,6 +201,7 @@ describe('Users', function() {
                   if (error) {
                       done(error);
                   } else {
+                      console.log("user created 2nd time");
                       assert.isOk(typeof res.body === 'object');
                       assert.equal(res.body['createStatus'], 'user existed');                     
                       assert.equal(res.body['userId'],undefined);                    

@@ -63,18 +63,67 @@ router.get('/username/:username', function(req,res) {
 
 //POST /users/createuser
 router.post('/createuser', function(req,res) {
-  var newUser = new User(req.body);  
-  newUser.save().then(function(addedUser) {
-    /* 
-    WHY DOES THIS BLOCK RETURN AN OBJECT OF UNDEFINED ATTRIBUTES ???
-    for(var x in addedUser._id) {
-      console.log(x + ": ");
-      console.log(typeof x === "function" ? addedUser._id.x() : addedUser._id.x);
-    } */ 
-    console.log("New user created, id: " + addedUser._id + ", id type: " + typeof addedUser._id);
-    //console.log(addedUser);
-    res.json({createStatus: "user created" , userId:addedUser._id});
+  var newUser = new User(req.body);
+  var duplicated = false;
+  
+  //check duplicate instances
+  var noDuplicateAllowed = ["username","email","pps"];
+  for(var i = 0; i < noDuplicateAllowed.length; i++) {  
+    var attr = noDuplicateAllowed[i];
+    
+    //empty find means all rows of instance in db
+    noDuplicateAllowed[i] = User.find({}).where(attr).equals(newUser[attr]); //build queries
+    //exec(callback);
+  }
+  
+  //var counter = 0;
+  noDuplicateAllowed[0].exec(function(err,user) {
+    console.log('0');
+    console.log(err);
+    //console.log(user);
+    if (err) {
+      return res.status(500).json({
+        error: "Error reading user: " + err
+      });
+    }
+    if(!user) {
+      noDuplicateAllowed[1].exec(function(err,user) {
+        console.log('1');
+        if (err) {
+          return res.status(500).json({
+            error: "Error reading user: " + err
+          });
+        }
+        if(!user) {
+          noDuplicateAllowed[2].exec(function(err,user) {
+            console.log('2');
+            if (err) {
+              return res.status(500).json({
+                error: "Error reading user: " + err
+              });
+            }
+            if(user) {
+              res.json({createStatus: "user existed"});
+            }
+            else {
+              newUser.save().then(function(addedUser) {
+                console.log("New user created, id: " + addedUser._id + ", id type: " + typeof addedUser._id);
+                res.json({createStatus: "user created" , userId:addedUser._id});
+              });
+            }
+          });
+        }
+        else {
+          res.json({createStatus: "user existed"});
+        }
+      });
+    }
+    else {
+      console.log("Duplicate user detected");
+      res.json({createStatus: "user existed"});
+    }
   });
+  
 });
 
 //GET /users/deleteuser/:id
@@ -91,7 +140,8 @@ router.get('/deleteuser/:id', function(req,res) {
 
 //POST /users/updateuser
 router.post('/updateuser', function(req,res) {
-  User.where({ _id: req.body.userId }).update(req.body.updateQuery, function(err,updatedUser) {
+  User.where({ _id: req.body.userId })
+  .update(req.body.updateQuery, function(err,updatedUser) {
     if (err) {
       return res.status(500).json({
         error: "Error reading user: " + err
