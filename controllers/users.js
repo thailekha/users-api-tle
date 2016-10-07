@@ -25,7 +25,7 @@ router.get('/', function(req, res) {
 // GET /users/:id
 // Get a user by ID
 router.get('/:id', function(req, res) {
-  User.findOne({
+  User.find({
     _id: req.params.id
   }, function(err, user) {
     if (err) {

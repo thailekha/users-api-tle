@@ -119,8 +119,9 @@ describe('Users', function() {
           .get('/users/' + id)
           .end(function(err, res) {
             res.should.have.status(200);
-            expect(res.body).to.be.a('object');
-            expect(res.body.name.first).to.be.a('string');
+            expect(res.body).to.be.a('array');
+            assert.equal(res.body.length,1);
+            expect(res.body[0].name.first).to.be.a('string');
             done();
           });
       });
@@ -169,6 +170,8 @@ describe('Users', function() {
       
     });
   });
+  
+  //create a duplicate user
   
   // create user, delete created user, verify
   describe('/GET users/deleteuser/:id', function() {
