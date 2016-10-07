@@ -42,19 +42,6 @@ router.get('/:id', function(req, res) {
   });
 });
 
-router.get('/deleteall/', function(req, res) {
-  console.log('******************************************************88');
-  User.find({}, function(err, users) {
-    if (err) {
-      return res.status(500).json({
-        error: "Error listing users: " + err
-      });
-    }
-
-    res.json(users);
-  }); 
-});
-
 //GET /users/username/:username
 router.get('/username/:username', function(req,res) {
   User.find({
@@ -74,12 +61,56 @@ router.get('/username/:username', function(req,res) {
   });
 });
 
+/* function noDuplicateUser(newUser,queries,counter) {
+  if(queries.length - 1 === counter) {
+    //if only 1 item in the queries
+    queries[counter].exec(function(err,user) {
+      console.log(counter);
+      if (err) {
+        return res.status(500).json({
+          error: "Error reading user: " + err
+        });
+      }
+      //console.log("Length : " + user.length);
+      if(user.length !== 0) {
+        return res.json({createStatus: "user existed"});
+      }
+      else {
+        newUser.save().then(function(addedUser) {
+          console.log("New user created, id: " + addedUser._id + ", id type: " + typeof addedUser._id);
+          return res.json({createStatus: "user created" , userId:addedUser._id});
+        });
+      }
+    });
+  }
+  else {
+    queries[counter].exec(function(err,user) {
+      console.log(counter);
+      if (err) {
+        return res.status(500).json({
+          error: "Error reading user: " + err
+        });
+      }
+      if(user.length === 0) {
+        counter++;
+        console.log("Enter next recursion");
+        noDuplicateUser(newUser,queries,counter);
+        console.log("Out of recursion");
+      }
+      else {
+        console.log("Duplicate user detected");
+        return res.json({createStatus: "user existed"});
+      }
+    });
+  }
+  console.log("End");
+} */
+
 //POST /users/createuser
 router.post('/createuser', function(req,res) {
   var newUser = new User(req.body);
-  var duplicated = false;
+  var duplicated = false; 
   
-  //check duplicate instances
   var noDuplicateAllowed = ["username","email","PPS"];
   for(var i = 0; i < noDuplicateAllowed.length; i++) {  
     var attr = noDuplicateAllowed[i];
@@ -88,7 +119,7 @@ router.post('/createuser', function(req,res) {
     noDuplicateAllowed[i] = User.find({}).where(attr).equals(newUser[attr]); //build queries
   }
   
-  //var counter = 0;
+  //check duplicate instances, then create a new user
   noDuplicateAllowed[0].exec(function(err,user) {
     console.log('0');
     if (err) {
@@ -133,8 +164,7 @@ router.post('/createuser', function(req,res) {
       console.log("Duplicate user detected");
       res.json({createStatus: "user existed"});
     }
-  });
-  
+  });  
 });
 
 //GET /users/deleteuser/:id
@@ -164,7 +194,7 @@ router.post('/updateuser', function(req,res) {
 
 //Default route
 router.get('/*',function(req,res){
-  console.log("Default route hit");
+  console.log("Default route hit in /users scope");
   res.json("Default route");
 });
 module.exports = router;

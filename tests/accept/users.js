@@ -253,9 +253,7 @@ describe('Users', function() {
       });     
       
     });
-  });
-  
-  
+  }); 
   
   // update - ideal case, test: create a user, update that user and verify
   describe('/POST users/updateuser', function() {
