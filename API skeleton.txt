@@ -13,10 +13,43 @@ Returns a list of Users
 *  **URL Params**
 
   None
-
+  
 * **Data Params**
 
-  None
+  **Any of User's model's attribute, ie. :**
+  ```
+  {
+    gender: String,
+    name: {
+      title: String,
+      first: String,
+      last: String
+    },
+    location: {
+      street: String,
+      city: String,
+      state: String,
+      zip: Number
+    },
+    email: String,
+    username: String,
+    password: String,
+    salt: String,
+    md5: String,
+    sha1: String,
+    sha256: String,
+    registered: Number,
+    dob: Number,
+    phone: String,
+    cell: String,
+    PPS: String,
+    picture: {
+      large: String,
+      medium: String,
+      thumbnail: String
+    }
+  }
+  ```
 
 * **Success Response:**
 

@@ -191,7 +191,7 @@ router.post('/updateuser', function(req,res) {
         error: "Error reading user: " + err
       });
     }
-    res.json(updatedUser);
+    res.status(200).json(updatedUser);
   });
 });
 

@@ -360,6 +360,70 @@ Delete a user
     console.log(response);
   });
   ```
-  
+
+**Update user**
+----
+Update a user
+
+* **URL**
+
+  `/users/updateuser`
+
+* **Method:**
+
+  `POST`
+
+*  **URL Params**
+
+  None
+
+* **Data Params**
+
+  None
+
+* **Success Response:**
+
+  * **Code:** 200 <br />
+    **Content:**
+
+    ```javascript
+    { 
+      ok: Number,
+      nModified: Number, 
+      n: Number 
+    }
+    ```
+
+* **Error Response:**
+
+* **Code:** 500 INTERNAL SERVER ERROR <br />
+  **Content:**
+
+  ```javascript
+  { "error": "Error listing users" }
+  ```
+
+* **Sample Call:**
+
+  ```javascript
+  var settings = {
+    "async": true,
+    "crossDomain": true,
+    "url": "http://localhost:8000/users/updateuser",
+    "method": "POST",
+    "headers": {
+      "content-type": "application/json",
+      "cache-control": "no-cache",
+      "postman-token": "33ec8afe-166a-8e61-4135-ecdd55f27719"
+    },
+    "processData": false,
+    "data": "{ \n\t\"userId\": \"57f7fd25d6cfe12ef4f55db3\", \n\t\"updateQuery\": {\n    \t\"name\": {\n      \t\t\"title\": \"mr\",\n      \t\t\"first\": \"abc\",\n    \t\t\"last\": \"def\"\n    \t},\n    \t\"cell\": \"54321\"\n\t}\n}\n"
+  }
+
+  $.ajax(settings).done(function (response) {
+    console.log(response);
+  });
+  ```
+
   
 Inspired by https://gist.github.com/iros/3426278

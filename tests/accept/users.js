@@ -170,9 +170,6 @@ describe('Users', function() {
                   
                   //Check all attibutes
                   ["gender","name","location","email","username","password","salt","md5","sha1","sha256","registered","dob","phone","cell","PPS","picture"].forEach(function(attrToTest) {
-                    //console.log(attrToTest);
-                    //console.log(user[attrToTest]);
-                    //console.log(userForTesting[attrToTest]);
                     assert.isOk(user[attrToTest] !== undefined);
                     assert.isOk(userForTesting[attrToTest] !== undefined);                    
                     assert.isOk(typeof user[attrToTest] === typeof userForTesting[attrToTest]);
@@ -209,6 +206,7 @@ describe('Users', function() {
                   if (error) {
                       done(error);
                   } else {
+                      res.should.have.status(200);
                       //console.log("user created 2nd time");
                       assert.isOk(typeof res.body === 'object');
                       assert.equal(res.body['createStatus'], 'user existed');                     
@@ -255,7 +253,7 @@ describe('Users', function() {
     });
   }); 
   
-  // update - ideal case, test procedure: create a user then update that user
+  // update
   describe('/POST users/updateuser', function() {
     it('should update a user', function(done) {
       removeAllUsers();
@@ -281,6 +279,7 @@ describe('Users', function() {
                     done(error);
                 } else {                    
                   //{ ok: 1, nModified: 1, n: 1 }
+                  res.should.have.status(200);
                   assert.equal(res.body['ok'],1);
                   assert.equal(res.body['nModified'],1);
                   assert.equal(res.body['n'],1);
@@ -314,7 +313,4 @@ describe('Users', function() {
         });
     });
   });
-
-  //update user with invalid query
-  
 });
