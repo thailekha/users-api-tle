@@ -2,6 +2,7 @@ var User = require('../models/user');
 var express = require('express');
 var router = express.Router();
 var bodyParser = require('body-parser');
+var Promise = require('bluebird');
 
 router.use(bodyParser.urlencoded({
     extended: true
@@ -74,64 +75,50 @@ router.get('/:id', function(req, res) {
   return;
 } */
 
-//POST /users/createuser
-router.post('/createuser', function(req,res) {
-  var newUser = new User(req.body);
-  var duplicated = false; 
-  
+//check for duplicate user or update query that can potentially cause duplicate users
+function checkNoDuplicateUser(query, res, callback) {
   var noDuplicateAllowed = ["username","email","PPS"];
   for(var i = 0; i < noDuplicateAllowed.length; i++) {  
     var attr = noDuplicateAllowed[i];
     
     //empty find{} means get all rows of instance in db
-    noDuplicateAllowed[i] = User.find({}).where(attr).equals(newUser[attr]); //build queries
+    noDuplicateAllowed[i] = User.find({}).where(attr).equals(query[attr]); //build queries
   }
-
+  
   //check duplicate instances, then create a new user, notice that this part is hardcorded and creates a callback hell. async.js library might be a solution later on 
-  noDuplicateAllowed[0].exec(function(err,user) {
+  noDuplicateAllowed[0].exec().then(function(users) {
     //console.log('0');
-    if (err) {
-      return res.status(500).json({
-        error: "Error checking duplicate users: " + err
-      });
-    }
-    if(user.length === 0) {
-      noDuplicateAllowed[1].exec(function(err,user) {
+    if(users.length === 0) {
+      noDuplicateAllowed[1].exec().then(function(users) {
         //console.log('1');
-        if (err) {
-          return res.status(500).json({
-            error: "Error checking duplicate users: " + err
-          });
-        }
-        if(user.length === 0) {
-          noDuplicateAllowed[2].exec(function(err,user) {
+        if(users.length === 0) {
+          noDuplicateAllowed[2].exec().then(function(users) {
             //console.log('2');
-            if (err) {
-              return res.status(500).json({
-                error: "Error checking duplicate users: " + err
-              });
-            }
-            //console.log("Length : " + user.length);
-            if(user.length === 0) {
-              newUser.save().then(function(addedUser) {
-                console.log("New user created, id: " + addedUser._id + ", id type: " + typeof addedUser._id);
-                res.json({createStatus: "user created" , userId:addedUser._id});
-              });
-            }
-            else {
-              res.json({createStatus: "user existed"});              
-            }
+            if(users.length === 0)
+              callback(res);
+            else
+              res.json({createStatus: "user existed"});
           });
         }
-        else {
+        else
           res.json({createStatus: "user existed"});
-        }
       });
     }
     else {
       console.log("Duplicate user detected");
       res.json({createStatus: "user existed"});
     }
+  });
+}
+
+//POST /users/createuser
+router.post('/createuser', function(req,res) {
+  var newUser = new User(req.body);
+  checkNoDuplicateUser(newUser, res, function(res) {
+    return newUser.save().then(function(addedUser) {
+      console.log("New user created, id: " + addedUser._id + ", id type: " + typeof addedUser._id);
+      res.json({createStatus: "user created" , userId:addedUser._id});
+    });
   });
 });
 
