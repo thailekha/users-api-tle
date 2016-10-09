@@ -83,7 +83,7 @@ router.post('/createuser', function(req,res) {
       res.json({createStatus: "user created" , userId:addedUser._id});
     });
   }, function(res) {
-    console.log("Duplicate user detected");
+    //console.log("Duplicate user detected");
     res.json({createStatus: "user existed"});
   });
 });

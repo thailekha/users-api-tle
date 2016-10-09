@@ -94,15 +94,10 @@ function removeAllUsers() {
   });
 }
 
+//a utility function for the test for duplicate users when updating. takes in an array of paths (eg. ['/users/createuser','/users/updateuser']); test objects that can be user or an update query; and callbacks to be executed
 function chaiRequestCreateUser(paths, testObjects,callbacks) {
-  //console.log('0');
   if(testObjects.length > 0 && paths.length > 0 && callbacks.length > 0) {
-    //console.log('1');
     var testObject = testObjects.shift();
-    /* if(testObject.updateQuery) {
-      console.log('>>>>>>>>>>>>>>');
-      console.log(testObject);
-    } */
     chai.request(url)
       .post(paths.shift())
       .set('content-type', 'application/json')
@@ -111,7 +106,6 @@ function chaiRequestCreateUser(paths, testObjects,callbacks) {
         if (error)
           done(error);
         else {
-          //console.log('2');
           //callback is responsible for revoking c if needed
           callbacks.shift()(testObjects,testObject,res);
           chaiRequestCreateUser(paths, testObjects,callbacks);
@@ -206,7 +200,6 @@ describe('Users', function() {
               done(error);
           } else {
               res.should.have.status(200);
-              //console.log("Chai: create test: id: " + res.body + ", type: " + typeof res.body);
               assert.isOk(typeof res.body === 'object');              
               assert.equal(res.body['createStatus'],'user created');
               
@@ -231,7 +224,7 @@ describe('Users', function() {
   
   //users with duplicate username, email, pps are not allowed
   describe('/POST users/createuser', function() {
-    it('users with duplicate username, email, pps are not allowed', function(done) {
+    it('creating users with duplicate username, email, pps are not allowed', function(done) {
       removeAllUsers();
       var userForTesting = getUserForTesting();      
       chai.request(url)
@@ -242,8 +235,6 @@ describe('Users', function() {
           if (error) {
               done(error);
           } else {
-              //console.log("create the testing user 1st time");
-              //console.log("now create the testing user 2nd time");
               chai.request(url)
               .post('/users/createuser')
               .set('content-type', 'application/json')
@@ -253,7 +244,6 @@ describe('Users', function() {
                       done(error);
                   } else {
                       res.should.have.status(200);
-                      //console.log("user created 2nd time");
                       assert.isOk(typeof res.body === 'object');
                       assert.equal(res.body['createStatus'], 'user existed');                     
                       assert.equal(res.body['userId'],undefined);
@@ -282,12 +272,10 @@ describe('Users', function() {
               done(error);
           } else {
             var userId = res.body['userId'];
-            //console.log(typeof userId);
             //delete user
             chai.request(url)
             .get('/users/deleteuser/' + userId)
             .end(function(err, res) {
-              //console.log(res.body);
               res.should.have.status(200);
               assert.isOk(typeof res.body === 'string');
               assert.equal(res.body, 'user deleted');
