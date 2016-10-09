@@ -42,44 +42,27 @@ router.get('/:id', function(req, res) {
   });
 });
 
-/* The following block is the implementation of the verifying duplication process of the /createuser request but results in timeout error
-
-
-  function noDuplicateUser(newUser,queries,counter) {
-  if(queries.length - 1 === counter) {
-    //if only 1 item in the queries
-    queries[counter].exec(function(err,user) {
-      console.log(counter);
-      if (err) {
-        return res.status(500).json({
-          error: "Error reading user: " + err
-        });
-      }
-      //console.log("Length : " + user.length);
-      if(user.length !== 0) {
-        return res.json({createStatus: "user existed"});
-      }
-      else {
-        newUser.save().then(function(addedUser) {
-          console.log("New user created, id: " + addedUser._id + ", id type: " + typeof addedUser._id);
-          return res.json({createStatus: "user created" , userId:addedUser._id});
-        });
-      }
+//The following block is the recursion-style implementation of the verifying duplication process of the /createuser request but results in timeout error
+/* function noDuplicateUser(newUser,queries,counter) {    
+  if(counter >= queries.length) {
+    //if no potential duplicate criteria to check left
+    return newUser.save().then(function(addedUser) {
+      console.log("New user created, id: " + addedUser._id + ", id type: " + typeof addedUser._id);
+      return res.json({createStatus: "user created" , userId:addedUser._id});
     });
   }
   else {
     queries[counter].exec(function(err,user) {
       console.log(counter);
-      if (err) {
+      if (err)
         return res.status(500).json({
           error: "Error reading user: " + err
         });
-      }
       if(user.length === 0) {
-        counter++;
-        console.log("Enter next recursion");
-        noDuplicateUser(newUser,queries,counter);
-        console.log("Out of recursion");
+          counter++;
+          console.log("Enter next recursion");
+          return noDuplicateUser(newUser,queries,counter);
+          //console.log("Out of recursion");
       }
       else {
         console.log("Duplicate user detected");
@@ -88,6 +71,7 @@ router.get('/:id', function(req, res) {
     });
   }
   console.log("End");
+  return;
 } */
 
 //POST /users/createuser
@@ -98,12 +82,12 @@ router.post('/createuser', function(req,res) {
   var noDuplicateAllowed = ["username","email","PPS"];
   for(var i = 0; i < noDuplicateAllowed.length; i++) {  
     var attr = noDuplicateAllowed[i];
-    //console.log(attr + "<->" + newUser[attr]);
-    //empty find means all rows of instance in db
+    
+    //empty find{} means get all rows of instance in db
     noDuplicateAllowed[i] = User.find({}).where(attr).equals(newUser[attr]); //build queries
   }
-  
-  //check duplicate instances, then create a new user
+
+  //check duplicate instances, then create a new user, notice that this part is hardcorded and creates a callback hell. async.js library might be a solution later on 
   noDuplicateAllowed[0].exec(function(err,user) {
     //console.log('0');
     if (err) {
@@ -128,14 +112,14 @@ router.post('/createuser', function(req,res) {
               });
             }
             //console.log("Length : " + user.length);
-            if(user.length !== 0) {
-              res.json({createStatus: "user existed"});
-            }
-            else {
+            if(user.length === 0) {
               newUser.save().then(function(addedUser) {
                 console.log("New user created, id: " + addedUser._id + ", id type: " + typeof addedUser._id);
                 res.json({createStatus: "user created" , userId:addedUser._id});
               });
+            }
+            else {
+              res.json({createStatus: "user existed"});              
             }
           });
         }
@@ -148,7 +132,7 @@ router.post('/createuser', function(req,res) {
       console.log("Duplicate user detected");
       res.json({createStatus: "user existed"});
     }
-  });  
+  });
 });
 
 //GET /users/deleteuser/:id
