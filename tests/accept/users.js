@@ -94,6 +94,31 @@ function removeAllUsers() {
   });
 }
 
+function chaiRequestCreateUser(paths, testObjects,callbacks) {
+  console.log('0');
+  console.log(paths.length);
+  console.log(testObjects.length);
+  console.log(callbacks.length);
+  if(testObjects.length > 0 && paths.length > 0 && callbacks.length > 0) {
+    console.log('1');
+    var testObject = testObjects.shift();    
+    chai.request(url)
+      .post(paths.shift())
+      .set('content-type', 'application/json')
+      .send(testObject)
+      .end(function(error, res, body) {
+        if (error)
+          done(error);
+        else {
+          console.log('2');
+          //callback is responsible for revoking c if needed
+          callbacks.shift()(testObject,res);
+          chaiRequestCreateUser(paths, testObjects,callbacks);
+        }
+      });
+  }
+}
+
 describe('Users', function() {
 
   // Before our test suite
@@ -113,7 +138,59 @@ describe('Users', function() {
     if(delete userForTesting)
       console.log('deleted userForTesting var');
   }); */
-
+  
+    //update a user with a query that could potentially make him/her duplicate with other user
+  describe('/POST users/updateuser', function() {
+    it('should avoid updating a user with a query that could potentially make him/her duplicate with other user', function(done) {
+      removeAllUsers();
+      //First create users
+      var user1 = getUserForTesting();
+      var user2 = getUserForTesting();
+      //change user2 so that no duplicate with user1
+      user2['email'] += 'a';
+      user2['username'] += 'b';
+      user2['PPS'] += 'c';
+      //these queries will make user1 duplicate with user2
+      var updateQueryEmail = {
+        email: user2['email']
+      }
+      var updateQueryUsername = {
+        username: user2['username']
+      }
+      var updateQueryPPS = {
+        PPS: user2['PPS']
+      }
+      var updateQueryAllDupl = {
+        email: user2['email'],
+        username: user2['username'],
+        PPS: user2['PPS']
+      }
+      var paths = ['/users/createuser','/users/createuser','/users/updateuser','/users/updateuser','/users/updateuser','/users/updateuser'];
+      var testObjects = [user1,user2,updateQueryEmail,updateQueryUsername,updateQueryPPS,updateQueryAllDupl];
+      var callbacks = [
+        (testObject,res) => {console.log('user1 created');},//user1 created
+        (testObject,res) => {console.log('user2 created');},//user2 created
+        (testObject,res) => {
+          //user1's email is requested for updating but should be rejected
+          assert.equal(res.body,'update query cause duplicate');
+        },
+        (testObject,res) => {
+          //user1's username is requested for updating but should be rejected
+          assert.equal(res.body,'update query cause duplicate');
+        },
+        (testObject,res) => {
+          //user1's pps is requested for updating but should be rejected
+          assert.equal(res.body,'update query cause duplicate');
+        },
+        (testObject,res) => {
+          //user1's email, username ,pps are requested for updating but should be rejected
+          assert.equal(res.body,'update query cause duplicate');
+        }
+      ];
+      chaiRequestCreateUser(paths,testObjects,callbacks);
+    });
+  });
+/* 
   describe('/GET users', function() {
     it('should return a list of users', function(done) {
       chai.request(url)
@@ -291,7 +368,9 @@ describe('Users', function() {
       });
   });
   
-    //delete all users
+
+  
+  //delete all users
   describe('/GET deleteall', function() {
     it('should delete all users and return empty array', function(done) {
       chai.request(url)
@@ -310,7 +389,8 @@ describe('Users', function() {
         });
     });
   });
-  
+ */  
+ 
   //More tests can be written:  
   //any task on a user that does not exist
   //update or create user with invalid query

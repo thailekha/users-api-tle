@@ -85,7 +85,7 @@ function checkNoDuplicateUser(query, res, callback) {
     noDuplicateAllowed[i] = User.find({}).where(attr).equals(query[attr]); //build queries
   }
   
-  //check duplicate instances, then create a new user, notice that this part is hardcorded and creates a callback hell. async.js library might be a solution later on 
+  //check duplicate instances, then create a new user, notice that this part is hardcorded and slightly creates a callback hell. async.js library might be a solution later on 
   noDuplicateAllowed[0].exec().then(function(users) {
     //console.log('0');
     if(users.length === 0) {
@@ -144,6 +144,8 @@ router.post('/updateuser', function(req,res) {
       });
     }
     res.status(200).json(updatedUser);
+    
+    //{'update query cause duplicate'}
   });
 });
 
