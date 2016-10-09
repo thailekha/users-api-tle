@@ -1,6 +1,6 @@
 # Users API
 
-Users RESTful API to build your contact list template against. It implements user listing, reading, updating, deleting, and creating. It is built using JavaScript/Node.js (our language of choice), ExpressJS (a small, lightweight web MVC framework) & Mongoose (a MongoDB object modelling library).
+Users RESTful API. It implements user listing, reading, updating, deleting, and creating. It is built using JavaScript/Node.js (our language of choice), ExpressJS (a small, lightweight web MVC framework) & Mongoose (a MongoDB object modelling library).
 
 ## Pre-requisites
 

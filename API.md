@@ -426,6 +426,12 @@ Update a user
       n: Number 
     }
     ```
+    **If the update request cause duplication with other users:**
+    
+    ```javascript
+    'update query cause duplicate'
+    ```
+    
 
 * **Error Response:**
 
@@ -433,7 +439,7 @@ Update a user
   **Content:**
 
   ```javascript
-  { "error": "Error listing users" }
+  { "error": "Error reading users" }
   ```
 
 * **Sample Call:**
