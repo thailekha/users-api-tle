@@ -43,82 +43,48 @@ router.get('/:id', function(req, res) {
   });
 });
 
-//The following block is the recursion-style implementation of the verifying duplication process of the /createuser request but results in timeout error
-/* function noDuplicateUser(newUser,queries,counter) {    
-  if(counter >= queries.length) {
-    //if no potential duplicate criteria to check left
-    return newUser.save().then(function(addedUser) {
-      console.log("New user created, id: " + addedUser._id + ", id type: " + typeof addedUser._id);
-      return res.json({createStatus: "user created" , userId:addedUser._id});
-    });
-  }
+//handle an array of Mongoose finding-user-queries
+function execDbQueries(dbQueries, req, res, callback, errorCallback) {
+  if(dbQueries.length === 0)
+    //if no query to execute
+    callback(req,res);
   else {
-    queries[counter].exec(function(err,user) {
-      console.log(counter);
-      if (err)
-        return res.status(500).json({
-          error: "Error reading user: " + err
-        });
-      if(user.length === 0) {
-          counter++;
-          console.log("Enter next recursion");
-          return noDuplicateUser(newUser,queries,counter);
-          //console.log("Out of recursion");
+    dbQueries.shift().exec().then(function(results) {
+      if(results.length === 0) {
+        execDbQueries(dbQueries, req, res, callback, errorCallback);
       }
-      else {
-        console.log("Duplicate user detected");
-        return res.json({createStatus: "user existed"});
-      }
+      else
+        errorCallback(res);
     });
   }
-  console.log("End");
-  return;
-} */
+}
 
 //check for duplicate user or update query that can potentially cause duplicate users
-function checkNoDuplicateUser(query, res, callback) {
+//req and res are original request and response from client, these are passed to the callback
+function checkNoDuplicateUser(query, req, res, callback, errorCallback) {
   var noDuplicateAllowed = ["username","email","PPS"];
+  var mongooseFindQueries = []
   for(var i = 0; i < noDuplicateAllowed.length; i++) {  
     var attr = noDuplicateAllowed[i];
     
     //empty find{} means get all rows of instance in db
-    noDuplicateAllowed[i] = User.find({}).where(attr).equals(query[attr]); //build queries
+    if(query[attr] !== undefined)
+      mongooseFindQueries.push(User.find({}).where(attr).equals(query[attr])); //build find queries
   }
-  
-  //check duplicate instances, then create a new user, notice that this part is hardcorded and slightly creates a callback hell. async.js library might be a solution later on 
-  noDuplicateAllowed[0].exec().then(function(users) {
-    //console.log('0');
-    if(users.length === 0) {
-      noDuplicateAllowed[1].exec().then(function(users) {
-        //console.log('1');
-        if(users.length === 0) {
-          noDuplicateAllowed[2].exec().then(function(users) {
-            //console.log('2');
-            if(users.length === 0)
-              callback(res);
-            else
-              res.json({createStatus: "user existed"});
-          });
-        }
-        else
-          res.json({createStatus: "user existed"});
-      });
-    }
-    else {
-      console.log("Duplicate user detected");
-      res.json({createStatus: "user existed"});
-    }
-  });
+  execDbQueries(mongooseFindQueries,req,res,callback,errorCallback);
 }
 
 //POST /users/createuser
 router.post('/createuser', function(req,res) {
   var newUser = new User(req.body);
-  checkNoDuplicateUser(newUser, res, function(res) {
+  checkNoDuplicateUser(newUser,req, res, function(req,res) {
     return newUser.save().then(function(addedUser) {
       console.log("New user created, id: " + addedUser._id + ", id type: " + typeof addedUser._id);
       res.json({createStatus: "user created" , userId:addedUser._id});
     });
+  }, function(res) {
+    console.log("Duplicate user detected");
+    res.json({createStatus: "user existed"});
   });
 });
 
@@ -136,16 +102,18 @@ router.get('/deleteuser/:id', function(req,res) {
 
 //POST /users/updateuser
 router.post('/updateuser', function(req,res) {
-  User.where({ _id: req.body.userId })
-  .update(req.body.updateQuery, function(err,updatedUser) {
-    if (err) {
-      return res.status(500).json({
-        error: "Error reading user: " + err
-      });
-    }
-    res.status(200).json(updatedUser);
-    
-    //{'update query cause duplicate'}
+  checkNoDuplicateUser(req.body.updateQuery, req, res, function(req,res) {
+    User.where({ _id: req.body.userId })
+    .update(req.body.updateQuery, function(err,updatedUser) {
+      if (err) {
+        return res.status(500).json({
+          error: "Error reading user: " + err
+        });
+      }
+      res.status(200).json(updatedUser);
+    });
+  }, function(res) {
+    res.json('update query cause duplicate');
   });
 });
 

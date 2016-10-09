@@ -95,13 +95,14 @@ function removeAllUsers() {
 }
 
 function chaiRequestCreateUser(paths, testObjects,callbacks) {
-  console.log('0');
-  console.log(paths.length);
-  console.log(testObjects.length);
-  console.log(callbacks.length);
+  //console.log('0');
   if(testObjects.length > 0 && paths.length > 0 && callbacks.length > 0) {
-    console.log('1');
-    var testObject = testObjects.shift();    
+    //console.log('1');
+    var testObject = testObjects.shift();
+    /* if(testObject.updateQuery) {
+      console.log('>>>>>>>>>>>>>>');
+      console.log(testObject);
+    } */
     chai.request(url)
       .post(paths.shift())
       .set('content-type', 'application/json')
@@ -110,9 +111,9 @@ function chaiRequestCreateUser(paths, testObjects,callbacks) {
         if (error)
           done(error);
         else {
-          console.log('2');
+          //console.log('2');
           //callback is responsible for revoking c if needed
-          callbacks.shift()(testObject,res);
+          callbacks.shift()(testObjects,testObject,res);
           chaiRequestCreateUser(paths, testObjects,callbacks);
         }
       });
@@ -139,57 +140,159 @@ describe('Users', function() {
       console.log('deleted userForTesting var');
   }); */
   
-    //update a user with a query that could potentially make him/her duplicate with other user
+  //update a user with a query that could potentially make him/her duplicate with other user
   describe('/POST users/updateuser', function() {
-    it('should avoid updating a user with a query that could potentially make him/her duplicate with other user', function(done) {
+    it('should avoid updating a user with an email that could potentially make him/her duplicate with other user', function(done) {
       removeAllUsers();
       //First create users
       var user1 = getUserForTesting();
       var user2 = getUserForTesting();
-      //change user2 so that no duplicate with user1
-      user2['email'] += 'a';
-      user2['username'] += 'b';
-      user2['PPS'] += 'c';
-      //these queries will make user1 duplicate with user2
+      //change user1 so that no duplicate with user2
+      user1['email'] += 'a';
+      user1['username'] += 'b';
+      user1['PPS'] += 'c';
+      //the below query will make user2 duplicate with user1
       var updateQueryEmail = {
-        email: user2['email']
-      }
-      var updateQueryUsername = {
-        username: user2['username']
-      }
-      var updateQueryPPS = {
-        PPS: user2['PPS']
-      }
-      var updateQueryAllDupl = {
-        email: user2['email'],
-        username: user2['username'],
-        PPS: user2['PPS']
-      }
-      var paths = ['/users/createuser','/users/createuser','/users/updateuser','/users/updateuser','/users/updateuser','/users/updateuser'];
-      var testObjects = [user1,user2,updateQueryEmail,updateQueryUsername,updateQueryPPS,updateQueryAllDupl];
+        email: user1['email']
+      };
+      var paths = ['/users/createuser','/users/createuser','/users/updateuser'];
+      var testObjects = [user1,user2,updateQueryEmail];
       var callbacks = [
-        (testObject,res) => {console.log('user1 created');},//user1 created
-        (testObject,res) => {console.log('user2 created');},//user2 created
-        (testObject,res) => {
-          //user1's email is requested for updating but should be rejected
-          assert.equal(res.body,'update query cause duplicate');
+        (testObjects,testObject,res) => {},//user1 created
+        (testObjects,testObject,res) => {
+          //user2 created
+          //reconstruct updatequery, ready for next update requests
+          var updateRequestBody = {userId: res.body['userId'], updateQuery: testObjects.shift()};
+          //add updatequery back to the testObjects array
+          testObjects.unshift(updateRequestBody);
         },
-        (testObject,res) => {
-          //user1's username is requested for updating but should be rejected
+        (testObjects,testObject,res) => {
+          //user2's email is requested for updating but should be rejected
           assert.equal(res.body,'update query cause duplicate');
-        },
-        (testObject,res) => {
-          //user1's pps is requested for updating but should be rejected
-          assert.equal(res.body,'update query cause duplicate');
-        },
-        (testObject,res) => {
-          //user1's email, username ,pps are requested for updating but should be rejected
-          assert.equal(res.body,'update query cause duplicate');
+          done();
         }
       ];
       chaiRequestCreateUser(paths,testObjects,callbacks);
     });
   });
+  
+  //update a user with a query that could potentially make him/her duplicate with other user
+  describe('/POST users/updateuser', function() {
+    it('should avoid updating a user with a username that could potentially make him/her duplicate with other user', function(done) {
+      removeAllUsers();
+      //First create users
+      var user1 = getUserForTesting();
+      var user2 = getUserForTesting();
+      //change user1 so that no duplicate with user2
+      user1['email'] += 'a';
+      user1['username'] += 'b';
+      user1['PPS'] += 'c';
+      //the below query will make user2 duplicate with user1
+      var updateQueryUsername = {
+        username: user1['username']
+      };
+      var paths = ['/users/createuser','/users/createuser','/users/updateuser'];
+      var testObjects = [user1,user2,updateQueryUsername];
+      var callbacks = [
+        (testObjects,testObject,res) => {},//user1 created
+        (testObjects,testObject,res) => {
+          //user2 created
+          //reconstruct updatequery, ready for next update requests
+          var updateRequestBody = {userId: res.body['userId'], updateQuery: testObjects.shift()};
+          //add updatequery back to the testObjects array
+          testObjects.unshift(updateRequestBody);
+        },
+        (testObjects,testObject,res) => {
+          //user2's username is requested for updating but should be rejected
+          assert.equal(res.body,'update query cause duplicate');
+          done();
+        }
+      ];
+      chaiRequestCreateUser(paths,testObjects,callbacks);
+    });
+  });
+
+  //update a user with a query that could potentially make him/her duplicate with other user
+  describe('/POST users/updateuser', function() {
+    it('should avoid updating a user with an PPS that could potentially make him/her duplicate with other user', function(done) {
+      removeAllUsers();
+      //First create users
+      var user1 = getUserForTesting();
+      var user2 = getUserForTesting();
+      //change user1 so that no duplicate with user2
+      user1['email'] += 'a';
+      user1['username'] += 'b';
+      user1['PPS'] += 'c';
+      //the below query will make user2 duplicate with user1
+      var updateQueryPPS = {
+        PPS: user1['PPS']
+      };
+      var paths = ['/users/createuser','/users/createuser','/users/updateuser'];
+      var testObjects = [user1,user2,updateQueryPPS];
+      var callbacks = [
+        (testObjects,testObject,res) => {},//user1 created
+        (testObjects,testObject,res) => {
+          //user2 created
+          //reconstruct updatequery, ready for next update requests
+          var updateRequestBody = {userId: res.body['userId'], updateQuery: testObjects.shift()};
+          //add updatequery back to the testObjects array
+          testObjects.unshift(updateRequestBody);
+        },
+        (testObjects,testObject,res) => {
+          //user2's PPS is requested for updating but should be rejected
+          assert.equal(res.body,'update query cause duplicate');
+          done();
+        }
+      ];
+      chaiRequestCreateUser(paths,testObjects,callbacks);
+    });
+  });
+  
+  //update a user with a query that could potentially make him/her duplicate with other user
+  describe('/POST users/updateuser', function() {
+    it('should avoid updating a user with email, username, PPS that could potentially make him/her duplicate with other user', function(done) {
+      removeAllUsers();
+      //First create users
+      var user1 = getUserForTesting();
+      var user2 = getUserForTesting();
+      //change user1 so that no duplicate with user2
+      user1['email'] += 'a';
+      user1['username'] += 'b';
+      user1['PPS'] += 'c';
+      //the below query will make user2 duplicate with user1
+      var updateQueryAllDupl = {
+        email: user1['email'],
+        username: user1['username'],
+        PPS: user1['PPS']
+      };
+      var paths = ['/users/createuser','/users/createuser','/users/updateuser'];
+      var testObjects = [user1,user2,updateQueryAllDupl];
+      var callbacks = [
+        (testObjects,testObject,res) => {},//user1 created
+        (testObjects,testObject,res) => {
+          //user2 created
+          //reconstruct updatequery, ready for next update requests
+          var updateRequestBody = {userId: res.body['userId'], updateQuery: testObjects.shift()};
+          //add updatequery back to the testObjects array
+          testObjects.unshift(updateRequestBody);
+        },
+        (testObjects,testObject,res) => {
+          //user2's email, username, PPS are requested for updating but should be rejected
+          assert.equal(res.body,'update query cause duplicate');
+          done();
+        }
+      ];
+      chaiRequestCreateUser(paths,testObjects,callbacks);
+    });
+  });
+  
+  
+  
+  
+  
+  
+  
+  
 /* 
   describe('/GET users', function() {
     it('should return a list of users', function(done) {
