@@ -1,5 +1,7 @@
 # Users API
 
+## Original Repository: https://github.com/feedhenry/users-api
+
 Users RESTful API. It implements user listing, reading, updating, deleting, and creating. It is built using JavaScript/Node.js (our language of choice), ExpressJS (a small, lightweight web MVC framework) & Mongoose (a MongoDB object modelling library).
 
 ## Pre-requisites
