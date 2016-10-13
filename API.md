@@ -313,7 +313,7 @@ Delete a user
 
 * **Method:**
 
-  `GET`
+  `DELETE`
 
 *  **URL Params**
 
@@ -474,7 +474,7 @@ Delete all users
 
 * **Method:**
 
-  `GET`
+  `DELETE`
 
 *  **URL Params**
 

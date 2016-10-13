@@ -127,11 +127,6 @@ describe('Users', function() {
     });
   });
 
-  /* after(function(done) {
-   if(delete userForTesting)
-   console.log('deleted userForTesting var');
-   }); */
-
   describe('/GET users', function() {
     it('should return a list of users', function(done) {
       chai.request(url)
@@ -166,10 +161,10 @@ describe('Users', function() {
   });
 
   //delete all users
-  describe('/GET deleteall', function() {
+  describe('/DELETE deleteall', function() {
     it('should delete all users and return empty array', function(done) {
       chai.request(url)
-      .get('/deleteall')
+      .delete('/deleteall')
       .end(function(err, res) {
         res.should.have.status(200);
         User.find({}, function(err, users) {
@@ -258,7 +253,7 @@ describe('Users', function() {
 
 
   // create user, delete created user, verify
-  describe('/GET users/deleteuser/:id', function() {
+  describe('/DELETE users/deleteuser/:id', function() {
     it('should delete a single user', function(done) {
       removeAllUsers();
       //create user
@@ -274,7 +269,7 @@ describe('Users', function() {
           var userId = res.body['userId'];
           //delete user
           chai.request(url)
-          .get('/users/deleteuser/' + userId)
+          .delete('/users/deleteuser/' + userId)
           .end(function(err, res) {
             res.should.have.status(200);
             assert.isOk(typeof res.body === 'string');
@@ -283,7 +278,6 @@ describe('Users', function() {
           });
         }
       });
-
     });
   });
 

@@ -34,7 +34,7 @@ app.get('/', function(req, res, err) { // eslint-disable-line no-unused-vars
   });
 });
 
-app.get('/deleteall/', function(req,res) {
+app.delete('/deleteall/', function(req,res) {
   console.log("REMOVING");
   User.remove({}, function(err, users) {
     console.log("REMOVED");

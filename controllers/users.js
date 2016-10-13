@@ -89,7 +89,7 @@ router.post('/createuser', function(req, res) {
 });
 
 //GET /users/deleteuser/:id
-router.get('/deleteuser/:id', function(req, res) {
+router.delete('/deleteuser/:id', function(req, res) {
   User.findByIdAndRemove(req.params.id, function(err) {
     if (err) {
       return res.status(500).json({
