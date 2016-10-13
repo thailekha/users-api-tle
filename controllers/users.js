@@ -88,7 +88,7 @@ router.post('/createuser', function(req, res) {
   });
 });
 
-//GET /users/deleteuser/:id
+//DELETE /users/deleteuser/:id
 router.delete('/deleteuser/:id', function(req, res) {
   User.findByIdAndRemove(req.params.id, function(err) {
     if (err) {
